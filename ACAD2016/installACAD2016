@@ -1,0 +1,77 @@
+#!/bin/bash
+
+## oem at oemden dot com
+
+## Ajout -allowUntrusted 
+# help from :
+# download Install Autodesk AutoCAD 2016 for Mac.pkg to /tmp/Install Autodesk AutoCAD 2016 for Mac.pkg
+# http://forums.autodesk.com/t5/autocad-for-mac-general/deploying-autocad-2014-for-mac-to-computer-labs/td-p/5032058/page/2
+
+# Don't use $HOME to get install from loginwindow possible.
+#TEMP1="/tmp/acad"
+#mkdir -p "${TEMP1}"
+#chmod 777 "${TEMP1}"
+
+function help {
+    echo Usage:
+    echo
+    echo `basename $0` pkgPath licenseType serialNumber productKey [networkServer]
+    echo
+    echo pkgPath: Path to the installer pkg file.
+    echo licenseType: "N" for Network license, "S" for Standalone license.
+    echo serialNumber: Serial Number to install the product, in the format of xxx-xxxxxxxx.
+    echo productKey: Product Key of the product, e.g., 001H1 for AutoCAD 2016 for Mac.
+    echo networkServer: Optional. Input the network license server name if license type is "Network".
+}
+
+function sudo_check {
+	if [ ìd -u`ne 0 ] ; then
+		echo "Must be run as sudo, existing"
+		exit 1
+	fi
+}
+
+function installpkg {
+    echo "$pkgPath"
+    installer -verboseR -allowUntrusted -pkg "$pkgPath" -target /
+}
+ 
+function insertInstallInfo {
+   # tmpfile="${TEMP1}"/acodeAutoCAD2016
+    tmpfile="$HOME"/acodeAutoCAD2016
+    echo "${SERIALNUMBER}">>$tmpfile
+    echo "${PDKEY}">>$tmpfile
+    if [[ "$licenseType" = "N" ]];
+    then
+        echo "Single_License_Server">>$tmpfile
+        echo "${NETWORKSERVER}">>$tmpfile
+    else
+        echo "Standalone">>$tmpfile
+        echo "-">>$tmpfile
+    fi
+    echo "US">>$tmpfile
+    echo "License Transfer Utility">>$tmpfile
+    cp $tmpfile /tmp/
+    chmod 777 /tmp/acodeAutoCAD2016
+    rm -f $tmpfile
+}
+ 
+if [[ $1 == "-h" || $1 == "--h" || $1 == "help" || $1 == "" ]]
+then
+    help
+else
+    export pkgPath=$1
+    #N=network,S=standalone
+    export licenseType=$2
+    export SERIALNUMBER=$3
+    export PDKEY=$4
+    export NETWORKSERVER=$5
+    sudo_check
+    insertInstallInfo
+    installpkg
+
+    sleep 1
+    # Disable MC3 Framework (Customer Improvement Program)
+	#/usr/bin/defaults write /Library/Preferences/com.autodesk.MC3Framework MC3Enabled -int 0
+
+fi
