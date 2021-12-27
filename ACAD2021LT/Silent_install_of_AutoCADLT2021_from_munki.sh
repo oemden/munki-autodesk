@@ -7,7 +7,8 @@
 ## 20211216
 version=0.2
 ## munkiimport line :
-## munkiimport --destinationpath /tmp /Volumes/Installer/Install\ Autodesk\ AutoCAD\ LT\ 2021\ for\ Mac.app --postinstall_script=/path/to/Silent_install_of_AutoCADLT2021_from_munki.sh
+## munkiimport --destinationpath /tmp /Volumes/Installer/Install\ Autodesk\ AutoCAD\ LT\ 2021\ for\ Mac.app --postinstall_script=/path/to/Silent_install_of_AutoCADLT2021_from_munki.sh --file=/Applications/Autodesk/AutoCAD\ LT\ 2022/AutoCAD\ LT\ 2021.app --destinationitem=/Install\ Autodesk\ AutoCAD\ LT\ 2021\ for\ Mac.app
+
 
 ## must run sudo
 if [ `id -u` -ne 0 ] ; then
